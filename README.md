@@ -11,6 +11,8 @@ Code and data
 -------------
 
 Run `ansep.py` to create TRAJs or create `pop.txt`, run surface hopping by `run.py`, `data/` contains initial conditions and QC inputs and/or ML models.
+
+```
 Structure:
 examples/
 │
@@ -32,6 +34,7 @@ examples/
 ├── FULVENE_TDBA_0.5eV
 └── FULVENE_TDBA_dgrad - rescale velocity $g_{ij}$
 res/
+```
 
 Trajectories in H5MD format (exceeding 55 GB in total) can be provided upon request due to their size.
 
