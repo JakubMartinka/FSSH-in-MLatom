@@ -1,0 +1,115 @@
+#!/bin/bash
+#$ -N MLatom
+#$ -cwd
+#$ -q fq
+#$ -o ./outfile.$JOB_ID
+#$ -e ./errfile.$JOB_ID
+#$ -pe shm 2
+
+export PARA_ARCH=SMP
+export PARNODES=2
+export OMP_NUM_THREADS=2
+
+# BASIC VARIABLES. DO NOT CHANGE IT! #
+HNAME=`hostname -s`
+MYNAME=`whoami`
+
+export mndobin=/home/jakubm/SOFT/mndo2020
+export dftd4bin=/home/jakubm/miniconda3/bin/dftd4
+
+# MLatom
+export PYTHONPATH='/home/martinka/myenv3.13/bin/'
+export PYTHONPATH="/home/martinka/SOFT/mlatom_3/mlnac:$PYTHONPATH"
+#export PYTHONPATH="/home/martinka/SOFT/mlatom_3/equiloss:$PYTHONPATH"
+source ~/myenv3.13/bin/activate
+
+export mndobin=/home/martinka/SOFT/mndo2020        
+export dftd4bin=/home/martinka/miniconda3/bin/dftd4
+
+export COLUMBUS="/home/jiri/Columbus"
+
+export PATH="/home/jiri/Columbus:$PATH"
+
+export LD_LIBRARY_PATH="/home/martinka/SOFT/lib/:$LD_LIBRARY_PATH"
+
+#--------------------------------------------------------------------------
+#  SDIR is the directory where you have your Turbomole inputs 
+# (control, basis, coord, mos, ...)
+# THIS DIRECTORY IS USER SPECIFIC AND CAN BE CHANGED!
+# The content of this directory will be copied to scratch place on particular SGE node
+  SDIR=$SGE_CWD_PATH
+#  SDIR=pwd
+
+ if [ ! -d $SDIR ];  then
+  echo " "
+  echo " Error ! "
+  echo " Directory with COLUMBUS inputs # " $SDIR " # does not exist! "
+  echo " Check it ! "
+  echo " " 
+ fi
+
+# THIS IS THE /scratch DIRECTORY (default on each node) - DO NOT CHANGE IT! #
+# /scratch is defined on each SGE node.#
+ WDIR="/scratch"
+
+# This is the actual directory on the SGE node in the /scratch directory where your job is executed.
+# This directory will be created in /scratch/$HNAME dir
+ CDIR=${JOB_ID}
+
+# creation of working directories on SGE node /scratch
+
+ if [ ! -d $WDIR/$MYNAME ];  then
+  mkdir $WDIR/$MYNAME 
+ fi
+ if [ ! -d $WDIR/$MYNAME/$CDIR ];  then
+  mkdir $WDIR/$MYNAME/$CDIR 
+ fi
+
+# Full path of the working directory on the SGE node where job is executed 
+ CWDIR=$WDIR/$MYNAME/$CDIR
+# change to the working directory on the particular node, 
+# where job is executed.
+ cd $CWDIR
+#
+# echo.$HNAME.$JOB_ID is the check file saved in the directory from which this batch script was submitted 
+echo " COLUMBUS job " $JOB_ID " is executed on " $HNAME > $SDIR/echo.$HNAME.$JOB_ID
+#sysname >> $SDIR/echo.$HNAME.$JOB_ID
+# copy of COLUMBUS inputs to the working directory on the SGE node
+  cp -r $SDIR/*  $CWDIR
+  rm -f  $CWDIR/outfile.$JOB_ID
+  rm -f  $CWDIR/errfile.$JOB_ID
+  rm -f  $CWDIR/echo.$HNAME.$JOB_ID
+
+#--------------------------------------------------------------------------------------------------
+#CONTROL ECHOES  (it goes to SGE outfile.$JOB_ID)
+echo "--------------- MLatom JOB No. " $JOB_ID " ------------------"
+echo "                   USER: " $MYNAME
+echo "                  SHELL: " $SHELL
+echo "              USER HOME: " $HOME
+echo "---------------------------------------------------------"
+echo "         JOB STARTED ON: " `date`
+echo "---------------------------------------------------------"
+echo "    JOB was executed in: " $CWDIR
+echo "               on  NODE: " $HNAME
+echo " and was submitted from: " $SDIR
+echo "---------------------------------------------------------"
+echo $PATH 
+#----------------------------------------------------------------------------------------------------
+
+
+	/home/martinka/myenv3.13/bin/python3.13 run.py > $SGE_O_WORKDIR/run.out
+
+
+# Everything from working directory on the SGE node is copied  back to $SDIR.
+  cp -fra * $SDIR 
+  chk=$?
+# If everything from the SGE working directory is properly copied back to the submitting diretcory
+# working directory on the SGE node is deleted!
+# (If you want to keep it, deactivate 3 following lines with # !
+  if [ $chk -eq 0 ]; then
+      rm -rf $CWDIR
+  fi
+#
+echo "        JOB FINISHED ON: " `date`
+echo "---------------------------------------------------------"
+#----------------------------------------------------------------------------------------------------

@@ -1,0 +1,129 @@
+#!/bin/bash
+#$ -N MLatom
+#$ -cwd
+#$ -o ./outfile.$JOB_ID
+#$ -e ./errfile.$JOB_ID
+#$ -pe shm 2
+
+export PARA_ARCH=SMP
+export PARNODES=2
+export OMP_NUM_THREADS=2
+
+export PYTHONPATH="/home/jakubm/WORK/mlatom_3/mlnac/mlatom/:$PYTHONPATH"
+export COLUMBUS=/data/jiri/felix2022/columbus/Columbus/
+
+source ~/myvenv/bin/activate
+module load julia
+module load turbomole/7.9
+module load molden/6.9
+
+export mndobin=/data/theoch/jiri/mndo2022/mndo2020
+export dftd4bin=/home/jakubm/miniconda3/bin/dftd4
+
+export LD_LIBRARY_PATH="/usr/local/programs/python/python-3.13.2/arch/x86_64-clang-14-shared/lib/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/jiri/lib/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/pederzoli/curl/curl-7.49.1/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/pederzoli/LA/libla-0.8/.libs/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/data/jiri/LA/.libs/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/lib/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/lib/atlas-base/:$LD_LIBRARY_PATH"
+
+#--------------------------------------------------------------
+# MLatom BATCH QUEUE SCRIPT #
+# to submit this script type on command line:  qsub submit.sh
+#--------------------------------------------------------------
+
+#--------------------------------------------------------------
+# BASIC VARIABLES. DO NOT CHANGE IT! #
+HNAME=`hostname -s`
+MYNAME=`whoami`
+#--------------------------------------------------------------
+
+#--------------------------------------------------------------
+#  SDIR is the directory where you have your inputs 
+# (control, basis, coord, mos, ...)
+# THIS DIRECTORY IS USER SPECIFIC AND CAN BE CHANGED!
+# The content of this directory will be copied to scratch place
+# on particular SGE node
+SDIR=$SGE_CWD_PATH
+# SDIR=pwd
+if [ ! -d $SDIR ]; then
+	echo " "
+	echo " Error ! "
+	echo " Directory with inputs # " $SDIR " # does not exist! "
+	echo " Check it ! "
+	echo " " 
+fi
+
+# THIS IS THE /scratch DIRECTORY (default on each node) - DO NOT CHANGE IT!
+# /scratch is defined on each SGE node.#
+WDIR="/scratch"
+
+# This is the actual directory on the SGE node in the /scratch
+# directory where your job is executed.
+# This directory will be created in /scratch/$HNAME dir
+CDIR=${JOB_ID}
+
+# creation of working directories on SGE node /scratch
+if [ ! -d $WDIR/$MYNAME ]; then
+	mkdir $WDIR/$MYNAME 
+fi
+if [ ! -d $WDIR/$MYNAME/$CDIR ]; then
+	mkdir $WDIR/$MYNAME/$CDIR 
+fi
+
+# Full path of the working directory on the SGE node where job is executed 
+CWDIR=$WDIR/$MYNAME/$CDIR
+# change to the working directory on the particular node, 
+# where job is executed.
+cd $CWDIR
+
+# echo.$HNAME.$JOB_ID is the check file saved in the directory
+# from which this batch script was submitted 
+echo " MLatom job " $JOB_ID " is executed on " $HNAME > $SDIR/echo.$HNAME.$JOB_ID
+#sysname >> $SDIR/echo.$HNAME.$JOB_ID
+# copy of COLUMBUS inputs to the working directory on the SGE node
+  cp -r $SDIR/*  $CWDIR
+  rm -f  $CWDIR/outfile.$JOB_ID
+  rm -f  $CWDIR/errfile.$JOB_ID
+  rm -f  $CWDIR/echo.$HNAME.$JOB_ID
+
+  #-------------------------------------------------------------
+#CONTROL ECHOES  (it goes to SGE outfile.$JOB_ID)
+echo "--------------- MLatom JOB No. " $JOB_ID " ------------------"
+echo "                   USER: " $MYNAME
+echo "                  SHELL: " $SHELL
+echo "              USER HOME: " $HOME
+echo "---------------------------------------------------------"
+echo "         JOB STARTED ON: " `date`
+echo "---------------------------------------------------------"
+echo "    JOB was executed in: " $CWDIR
+echo "               on  NODE: " $HNAME
+echo " and was submitted from: " $SDIR
+echo "---------------------------------------------------------"
+echo $PATH 
+#---------------------------------------------------------------
+
+#---------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-IMPORTANT PART-#-#-#-#-#-#-#-#-#-#-#-#-#
+
+	/home/jakubm/myvenv/bin/python3 run.py > $SGE_O_WORKDIR/run.out
+
+#-#-#-#-#-#-#-#-#-#-#-#-IMPORTANT PART-#-#-#-#-#-#-#-#-#-#-#-#-#
+#---------------------------------------------------------------
+
+# Everything from working directory on the SGE node is copied  back to $SDIR.
+cp *h5 $SDIR 
+cp */*h5 $SDIR
+
+chk=$?
+# If everything from the SGE working directory is properly copied back to the submitting diretcory
+# working directory on the SGE node is deleted!
+# (If you want to keep it, deactivate 3 following lines with # !
+if [ $chk -eq 0 ]; then
+	rm -rf $CWDIR
+fi
+
+echo "        JOB FINISHED ON: " `date`
+echo "---------------------------------------------------------"
+#---------------------------------------------------------------

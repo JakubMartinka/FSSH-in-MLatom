@@ -1,0 +1,97 @@
+yes
+yes
+1               
+c1  
+add     
+6               
+C  
+  3.321000000000000E-003  1.026100000000000E-002 -4.112000000000000E-003
+yes
+&Basis
+  6
+library 
+2               
+yes
+proceed 
+&End
+&SO
+proceed 
+&End
+add     
+7               
+N  
+ -3.088700000000000E-002 -7.541000000000000E-003   2.43403000000000     
+yes
+&Basis
+  7
+library 
+2               
+yes
+proceed 
+&End
+&SO
+proceed 
+&End
+add     
+1               
+H  
+   1.70735200000000      -1.762100000000000E-002 -0.653170000000000     
+yes
+&Basis
+  1
+library 
+3               
+yes
+proceed 
+&End
+&SO
+proceed 
+&End
+add     
+1               
+H  
+   1.73983800000000       7.020000000000000E-003   3.57402900000000     
+yes
+&Basis
+  1
+library 
+3               
+yes
+proceed 
+&End
+&SO
+proceed 
+&End
+add     
+1               
+H  
+  -1.31592000000000       4.108500000000000E-002   4.02114700000000     
+yes
+&Basis
+  1
+library 
+3               
+yes
+proceed 
+&End
+&SO
+proceed 
+&End
+add     
+1               
+H  
+  -1.74165300000000      -4.788100000000000E-002  -1.32426000000000     
+yes
+&Basis
+  1
+library 
+3               
+yes
+proceed 
+&End
+&SO
+proceed 
+&End
+proceed 
+yes
+yes
