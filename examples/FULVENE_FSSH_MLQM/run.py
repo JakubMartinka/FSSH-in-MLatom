@@ -21,11 +21,7 @@ class mlmodels():
         self.e_model.predict(molecule=molecule, nstates=nstates, current_state=current_state, calculate_energy=calculate_energy, calculate_energy_gradients=calculate_energy_gradients)
         
         # Columbus NACs
-        dE = molecule.electronic_states[1].energy - molecule.electronic_states[0].energy
-        if dE * ml.constants.Hartree2eV < 0.5:
-        	self.nac_model.predict(molecule=molecule, nstates=nstates, current_state=current_state, calculate_energy=False, calculate_energy_gradients=False, calculate_nacv=True)
-        else:
-        	molecule.nacv = np.zeros((nstates,nstates,*molecule.get_xyz_coordinates().shape))
+        self.nac_model.predict(molecule=molecule, nstates=nstates, current_state=current_state, calculate_energy=False, calculate_energy_gradients=False, calculate_nacv=True)
 
 # Set singlepoint calculation
 msani = ml.models.msani(model_file=f'{root_dir}/data/msani.npz')
