@@ -24,6 +24,7 @@ for i in range(ntrajs):
         ic = db[i:i+1]
         ic.dump(f'TRAJ{i+1}/ic.json', format='json')
     if os.path.isfile(f'TRAJ{i+1}/traj1.h5'):
+        # Energy-nonconserving trajectories should be removed
         traj = ml.data.molecular_trajectory()
         traj.load(f'TRAJ{i+1}/traj1.h5', format='h5md')
         trajs.append(traj)
