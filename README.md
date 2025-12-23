@@ -3,7 +3,7 @@
 Preprint:
 - Jakub Martinka, Mikołaj Martyka, Jiří Pittner* and Pavlo O. Dral*. Flexible Framework for Surface Hopping: From Hybrid Schemes for Machine Learning to Benchmarkable Nonadiabatic Dynamics. 
 
-Preprint on: 
+Preprint on: [10.48550/arXiv.2512.19152](https://doi.org/10.48550/arXiv.2512.19152)
 
 - This repository contains a Jupyter notebook with Supporting Information (`SI.ipynb`), `examples/` containing input files and scripts to run surface hopping simulations and `res/` with resulting figures.
 
