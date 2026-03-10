@@ -1,7 +1,7 @@
 # FSSH-in-MLatom
 
-Preprint:
-- Jakub Martinka, Mikołaj Martyka, Jiří Pittner* and Pavlo O. Dral*. Flexible Framework for Surface Hopping: From Hybrid Schemes for Machine Learning to Benchmarkable Nonadiabatic Dynamics. 
+Paper:
+- Jakub Martinka, Mikołaj Martyka, Jiří Pittner* and Pavlo O. Dral*. Flexible Framework for Surface Hopping: From Hybrid Schemes for Machine Learning to Benchmarkable Nonadiabatic Dynamics. Journal of Chemical Theory and Computation 2026 22 (5), 2467-2479. DOI: [10.1021/acs.jctc.5c02137](https://doi.org/10.1021/acs.jctc.5c02137)
 
 Preprint on: [10.48550/arXiv.2512.19152](https://doi.org/10.48550/arXiv.2512.19152)
 
